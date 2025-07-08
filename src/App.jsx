@@ -18,7 +18,7 @@ function App() {
               />
             </div>
             <h2>嘿，这里是银河系里的地球的个人网站</h2>
-            <p className="subtitle">探索无限可能的数字宇宙</p>
+            <p className="subtitle">探索无限可能的银河系里的地球</p>
           </div>
           
           <div className="features-grid">
@@ -34,7 +34,7 @@ function App() {
             </div>
             <div className="feature-card">
               <div className="feature-icon">🌌</div>
-              <h3>银河连接</h3>
+              <h3>社交之星</h3>
               <p>连接宇宙中的每一个有趣的灵魂</p>
             </div>
           </div>
@@ -257,7 +257,7 @@ function App() {
 
       <footer className="footer">
         <div className="footer-content">
-          <p>© 2025 NCC-17039 | 建造者：银河系里的地球 ✨</p>
+          <p>© 2025 NCC-17039 | 银河系里的地球 ✨</p>
           <div className="footer-links">
             <span>🌍 地球时间: {new Date().toLocaleString('zh-CN')}</span>
           </div>

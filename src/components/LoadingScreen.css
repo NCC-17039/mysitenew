@@ -1,16 +1,15 @@
-/* 加载屏幕主容器 */
+/* 加载屏幕 */
 .loading-screen {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: #000;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.8s ease-out;
 }
 
 .loading-screen.fade-out {
@@ -18,319 +17,318 @@
   pointer-events: none;
 }
 
-/* 星空背景 */
+/* 背景 */
 .loading-background {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 60%, #0f3460 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
 }
 
-.stars, .stars2, .stars3 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-.stars {
-  background-image: 
-    radial-gradient(2px 2px at 20px 30px, #eee, transparent),
-    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
-    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
-    radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
-  background-repeat: repeat;
-  background-size: 200px 100px;
-  animation: zoom 20s infinite linear;
-}
-
-.stars2 {
-  background-image: 
-    radial-gradient(1px 1px at 40px 60px, #fff, transparent),
-    radial-gradient(1px 1px at 120px 10px, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 160px 90px, #eee, transparent);
-  background-repeat: repeat;
-  background-size: 300px 150px;
-  animation: zoom 30s infinite linear;
-}
-
-.stars3 {
-  background-image: 
-    radial-gradient(1px 1px at 60px 20px, rgba(255,255,255,0.5), transparent),
-    radial-gradient(1px 1px at 100px 100px, #ddd, transparent),
-    radial-gradient(1px 1px at 180px 50px, rgba(255,255,255,0.8), transparent);
-  background-repeat: repeat;
-  background-size: 400px 200px;
-  animation: zoom 40s infinite linear;
-}
-
-@keyframes zoom {
-  from {
-    transform: scale(0);
-  }
-  to {
-    transform: scale(1);
-  }
-}
-
-/* 加载内容 */
-.loading-content {
-  text-align: center;
+/* 主容器 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
   position: relative;
   z-index: 10;
 }
 
-/* Logo容器 */
-.logo-container {
+/* Logo部分 */
+.loading-logo-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.logo-wrapper {
   position: relative;
-  margin-bottom: 2rem;
-  display: inline-block;
-}
-
-.loading-logo {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid #64ffda;
-  box-shadow: 0 0 30px rgba(100, 255, 218, 0.5);
-  animation: logoFloat 3s ease-in-out infinite, logoGlow 2s ease-in-out infinite alternate;
-  position: relative;
-  z-index: 2;
-}
-
-.logo-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(100, 255, 218, 0.3) 0%, transparent 70%);
-  animation: pulse 2s ease-in-out infinite;
-  z-index: 1;
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-@keyframes logoGlow {
-  from { box-shadow: 0 0 30px rgba(100, 255, 218, 0.5); }
-  to { box-shadow: 0 0 50px rgba(100, 255, 218, 0.8); }
-}
-
-/* 标题和副标题 */
-.loading-title {
-  font-size: 3rem;
-  font-weight: bold;
-  background: linear-gradient(45deg, #64ffda, #448aff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.5rem;
-  animation: titleGlow 3s ease-in-out infinite;
-}
-
-.loading-subtitle {
-  font-size: 1.2rem;
-  color: #aaa;
-  margin-bottom: 3rem;
-  animation: fadeInOut 2s ease-in-out infinite;
-}
-
-@keyframes titleGlow {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.2); }
-}
-
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0.7; }
-  50% { opacity: 1; }
-}
-
-/* 进度条 */
-.loading-progress {
-  margin-bottom: 2rem;
-  width: 300px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.progress-bar {
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-  position: relative;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #64ffda, #448aff);
-  border-radius: 2px;
-  transition: width 0.3s ease;
-  position: relative;
-}
-
-.progress-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-.progress-text {
-  text-align: center;
-  margin-top: 0.5rem;
-  color: #64ffda;
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-/* 加载步骤 */
-.loading-steps {
-  margin-bottom: 2rem;
-  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.current-step {
-  color: #fff;
-  font-size: 1rem;
-  animation: stepFade 0.5s ease-in-out;
+.loading-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #64ffda;
+  box-shadow: 
+    0 0 20px rgba(100, 255, 218, 0.4),
+    0 0 40px rgba(100, 255, 218, 0.2),
+    inset 0 0 20px rgba(100, 255, 218, 0.1);
+  animation: logoFloat 4s ease-in-out infinite;
+  position: relative;
+  z-index: 3;
 }
 
-@keyframes stepFade {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* 脉冲效果 */
-.loading-effects {
+.logo-ring {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-.pulse-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 200px;
-  height: 200px;
   border: 2px solid rgba(100, 255, 218, 0.3);
   border-radius: 50%;
-  animation: pulseRing 3s ease-out infinite;
+  animation: ringRotate 6s linear infinite;
 }
 
-.pulse-ring.delay-1 {
-  animation-delay: 1s;
-  border-color: rgba(68, 138, 255, 0.3);
+.logo-ring {
+  width: 130px;
+  height: 130px;
+  border-top-color: #64ffda;
+  border-right-color: transparent;
 }
 
-.pulse-ring.delay-2 {
-  animation-delay: 2s;
-  border-color: rgba(100, 255, 218, 0.2);
+.logo-ring.ring-2 {
+  width: 160px;
+  height: 160px;
+  border: 1px solid rgba(68, 138, 255, 0.2);
+  border-left-color: #448aff;
+  border-bottom-color: transparent;
+  animation: ringRotate 8s linear infinite reverse;
 }
 
-@keyframes pulseRing {
-  0% {
-    transform: translate(-50%, -50%) scale(0.5);
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-8px) scale(1.05); }
+}
+
+@keyframes ringRotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 文字部分 */
+.loading-text {
+  text-align: center;
+}
+
+.site-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  background: linear-gradient(45deg, #64ffda 0%, #448aff 50%, #64ffda 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShimmer 3s ease-in-out infinite;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
+.site-subtitle {
+  font-size: 1.1rem;
+  color: #aaa;
+  opacity: 0.8;
+  animation: subtitleFade 2s ease-in-out infinite alternate;
+}
+
+@keyframes textShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes subtitleFade {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+
+/* 进度条部分 */
+.loading-progress-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.progress-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #64ffda 0%, #448aff 50%, #64ffda 100%);
+  background-size: 200% 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+  position: relative;
+  animation: progressShimmer 2s ease-in-out infinite;
+}
+
+.progress-glow {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 10px;
+  height: 10px;
+  background: #64ffda;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #64ffda, 0 0 20px #64ffda;
+  animation: glowPulse 1s ease-in-out infinite;
+}
+
+@keyframes progressShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.2); }
+}
+
+.progress-percentage {
+  text-align: center;
+  color: #64ffda;
+  font-weight: bold;
+  font-size: 1.2rem;
+  text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+}
+
+/* 状态文字 */
+.loading-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-text {
+  color: #fff;
+  font-size: 1rem;
+  opacity: 0.9;
+  animation: statusFade 0.5s ease-in-out;
+}
+
+@keyframes statusFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 0.9; transform: translateY(0); }
+}
+
+.status-dots {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #64ffda;
+  border-radius: 50%;
+  animation: dotBounce 1.4s ease-in-out infinite both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+.dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dotBounce {
+  0%, 80%, 100% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1.2);
     opacity: 1;
   }
-  100% {
-    transform: translate(-50%, -50%) scale(2);
-    opacity: 0;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
-  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
-  .loading-logo {
-    width: 100px;
-    height: 100px;
+  .loading-container {
+    gap: 2rem;
+    padding: 0 2rem;
   }
   
-  .logo-glow {
-    width: 120px;
-    height: 120px;
-  }
-  
-  .loading-title {
-    font-size: 2.5rem;
-  }
-  
-  .loading-subtitle {
-    font-size: 1rem;
-  }
-  
-  .loading-progress {
-    width: 250px;
-  }
-  
-  .pulse-ring {
-    width: 150px;
-    height: 150px;
-  }
-}
-
-@media (max-width: 480px) {
   .loading-logo {
     width: 80px;
     height: 80px;
   }
   
-  .logo-glow {
+  .logo-ring {
+    width: 110px;
+    height: 110px;
+  }
+  
+  .logo-ring.ring-2 {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .site-title {
+    font-size: 2rem;
+  }
+  
+  .site-subtitle {
+    font-size: 1rem;
+  }
+  
+  .loading-progress-section {
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .loading-container {
+    gap: 1.5rem;
+    padding: 0 1.5rem;
+  }
+  
+  .loading-logo {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .logo-ring {
     width: 100px;
     height: 100px;
   }
   
-  .loading-title {
-    font-size: 2rem;
+  .logo-ring.ring-2 {
+    width: 130px;
+    height: 130px;
   }
   
-  .loading-subtitle {
+  .site-title {
+    font-size: 1.8rem;
+  }
+  
+  .site-subtitle {
     font-size: 0.9rem;
   }
   
-  .loading-progress {
-    width: 200px;
+  .loading-progress-section {
+    max-width: 250px;
   }
   
-  .current-step {
+  .status-text {
     font-size: 0.9rem;
-  }
-  
-  .pulse-ring {
-    width: 120px;
-    height: 120px;
   }
 }

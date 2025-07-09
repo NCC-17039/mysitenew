@@ -6,7 +6,7 @@ function App() {
 
   const sections = {
     home: {
-      title: '欢迎来到我的个人空间',
+      title: '',
       content: (
         <div className="home-content">
           <h1 className="home-title">给生活以记录</h1>
@@ -191,8 +191,9 @@ function App() {
 
   // 获取当前年份
   const currentYear = new Date().getFullYear()
+  
   return (
-    <div className="app">
+    <div className={`app ${activeSection === 'home' ? 'home-active' : ''}`}>
       {/* 首页视频背景 */}
       {activeSection === 'home' && (
         <>
@@ -238,9 +239,11 @@ function App() {
 
       <main className="main">
         <div className="container">
-          <div className="section-header">
-            <h1>{sections[activeSection].title}</h1>
-          </div>
+          {sections[activeSection].title && (
+            <div className="section-header">
+              <h1>{sections[activeSection].title}</h1>
+            </div>
+          )}
           <div className="section-content">
             {sections[activeSection].content}
           </div>

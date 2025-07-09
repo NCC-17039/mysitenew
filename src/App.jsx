@@ -203,11 +203,25 @@ function App() {
               muted 
               loop 
               playsInline
-              onError={(e) => console.error('视频加载失败:', e)}
+              onError={(e) => {
+                console.error('视频加载失败:', e)
+                console.error('视频URL:', e.target.src)
+                // 如果视频加载失败，显示备用背景
+                e.target.style.display = 'none'
+              }}
               onLoadStart={() => console.log('视频开始加载')}
               onCanPlay={() => console.log('视频可以播放')}
+              onLoadedData={() => console.log('视频数据加载完成')}
             >
-              <source src="https://public.ysjf.com/mediastorm/material/material_preview/A008C0129_250530_884508.mp4" type="video/mp4" />
+              <source 
+                src="https://public.ysjf.com/mediastorm/material/material_preview/A008C0129_250530_884508.mp4" 
+                type="video/mp4" 
+              />
+              {/* 备用视频源 */}
+              <source 
+                src="https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4" 
+                type="video/mp4" 
+              />
               您的浏览器不支持视频播放
             </video>
           </div>

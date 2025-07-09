@@ -1,13 +1,44 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import LoadingScreen from './components/LoadingScreen'
+import AuthModal from './components/AuthModal'
+import { authService } from './utils/supabase'
 
 function App() {
   const [activeSection, setActiveSection] = useState('home')
   const [isLoading, setIsLoading] = useState(true)
+  const [user, setUser] = useState(null)
+  const [userProfile, setUserProfile] = useState(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+
+  // 检查用户登录状态
+  useEffect(() => {
+    const checkUser = async () => {
+      const { user } = await authService.getCurrentUser()
+      if (user) {
+        setUser(user)
+        const { data: profile } = await authService.getUserProfile(user.id)
+        setUserProfile(profile)
+      }
+    }
+    
+    checkUser()
+  }, [])
 
   const handleLoadingComplete = () => {
     setIsLoading(false)
+  }
+
+  const handleAuthSuccess = async (userData) => {
+    setUser(userData)
+    const { data: profile } = await authService.getUserProfile(userData.id)
+    setUserProfile(profile)
+  }
+
+  const handleLogout = async () => {
+    await authService.signOut()
+    setUser(null)
+    setUserProfile(null)
   }
 
   const sections = {
@@ -233,6 +264,29 @@ function App() {
               </button>
             ))}
           </nav>
+          
+          <div className="user-section">
+            {user ? (
+              <div className="user-info">
+                <div className="user-avatar">
+                  {userProfile?.username?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
+                </div>
+                <span className="user-name">
+                  {userProfile?.username || user.email.split('@')[0]}
+                </span>
+                <button className="logout-button" onClick={handleLogout}>
+                  退出
+                </button>
+              </div>
+            ) : (
+              <button 
+                className="auth-button"
+                onClick={() => setShowAuthModal(true)}
+              >
+                登录/注册
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -257,6 +311,12 @@ function App() {
           </div>
         </div>
       </footer>
+      
+      <AuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
   )
 }

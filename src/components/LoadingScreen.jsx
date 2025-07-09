@@ -5,25 +5,62 @@ const LoadingScreen = ({ onLoadingComplete }) => {
   const [progress, setProgress] = useState(0)
   const [currentStep, setCurrentStep] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
+  const [resourcesLoaded, setResourcesLoaded] = useState(false)
 
   const loadingSteps = [
     '初始化系统...',
-    '连接服务器...',
-    '加载资源...',
-    '准备界面...',
+    '连接数据库...',
+    '加载背景图片...',
+    '准备用户界面...',
     '启动完成...'
   ]
+
+  // 预加载背景图片
+  const preloadImages = () => {
+    return new Promise((resolve) => {
+      const images = [
+        'https://images.unsplash.com/photo-1752028228080-60eabd31e649',
+        'https://images.unsplash.com/photo-1752026631135-41117a9a7c1e',
+        'https://user-assets.sxlcdn.com/images/1046536/FpqadbyY9n7LXaAR77KQr9di7xxP.png'
+      ]
+      
+      let loadedCount = 0
+      const totalImages = images.length
+      
+      images.forEach((src) => {
+        const img = new Image()
+        img.onload = () => {
+          loadedCount++
+          if (loadedCount === totalImages) {
+            setResourcesLoaded(true)
+            resolve()
+          }
+        }
+        img.onerror = () => {
+          loadedCount++
+          if (loadedCount === totalImages) {
+            setResourcesLoaded(true)
+            resolve()
+          }
+        }
+        img.src = src
+      })
+    })
+  }
 
   useEffect(() => {
     let progressTimer
     let stepTimer
-    const totalDuration = 4000 // 4秒
+    const totalDuration = 5000 // 5秒，给图片加载更多时间
 
     const startLoading = () => {
+      // 开始预加载图片
+      preloadImages()
+      
       // 进度条动画
       progressTimer = setInterval(() => {
         setProgress(prev => {
-          if (prev >= 100) {
+          if (prev >= 100 && resourcesLoaded) {
             clearInterval(progressTimer)
             setTimeout(() => {
               setIsComplete(true)
@@ -33,7 +70,10 @@ const LoadingScreen = ({ onLoadingComplete }) => {
             }, 200)
             return 100
           }
-          return prev + (100 / (totalDuration / 50))
+          // 如果资源还没加载完，进度条在90%处等待
+          const increment = 100 / (totalDuration / 50)
+          const newProgress = prev + increment
+          return resourcesLoaded ? newProgress : Math.min(newProgress, 90)
         })
       }, 50)
 
@@ -55,7 +95,7 @@ const LoadingScreen = ({ onLoadingComplete }) => {
       clearInterval(progressTimer)
       clearTimeout(stepTimer)
     }
-  }, [onLoadingComplete])
+  }, [onLoadingComplete, resourcesLoaded])
 
   return (
     <div className={`loading-screen ${isComplete ? 'fade-out' : ''}`}>

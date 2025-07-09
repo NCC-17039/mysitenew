@@ -55,8 +55,8 @@ body, * {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(6px) saturate(0.8);
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px) saturate(0.6);
   z-index: -1;
 }
 
@@ -77,6 +77,75 @@ body, * {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* 用户信息和登录按钮 */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-button {
+  background: linear-gradient(45deg, #64ffda, #448aff);
+  border: none;
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.auth-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(100, 255, 218, 0.3);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  border: 1px solid rgba(100, 255, 218, 0.3);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #64ffda, #448aff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.user-name {
+  color: #64ffda;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.logout-button {
+  background: rgba(255, 107, 107, 0.2);
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+  background: rgba(255, 107, 107, 0.3);
+  transform: translateY(-1px);
 }
 
 .logo {

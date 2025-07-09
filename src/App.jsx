@@ -193,13 +193,22 @@ function App() {
   const currentYear = new Date().getFullYear()
   
   return (
-    <div className={`app ${activeSection === 'home' ? 'home-active' : ''}`}>
+    <div className={`app ${activeSection === 'home' ? 'home-active' : 'other-page'}`}>
       {/* 首页视频背景 */}
       {activeSection === 'home' && (
         <>
           <div className="home-video-background">
-            <video autoPlay muted loop playsInline>
+            <video 
+              autoPlay 
+              muted 
+              loop 
+              playsInline
+              onError={(e) => console.error('视频加载失败:', e)}
+              onLoadStart={() => console.log('视频开始加载')}
+              onCanPlay={() => console.log('视频可以播放')}
+            >
               <source src="https://public.ysjf.com/mediastorm/material/material_preview/A008C0129_250530_884508.mp4" type="video/mp4" />
+              您的浏览器不支持视频播放
             </video>
           </div>
           <div className="home-video-overlay"></div>

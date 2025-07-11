@@ -227,6 +227,24 @@
   animation: statusFade 0.5s ease-in-out;
 }
 
+.timeout-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timeout-text {
+  color: #ffc107 !important;
+  font-weight: bold;
+  animation: timeoutPulse 1s ease-in-out infinite;
+}
+
+@keyframes timeoutPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
 @keyframes statusFade {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 0.9; transform: translateY(0); }

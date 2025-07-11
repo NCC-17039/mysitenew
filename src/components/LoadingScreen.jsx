@@ -6,6 +6,8 @@ const LoadingScreen = ({ onLoadingComplete }) => {
   const [currentStep, setCurrentStep] = useState(0)
   const [isComplete, setIsComplete] = useState(false)
   const [resourcesLoaded, setResourcesLoaded] = useState(false)
+  const [isTimeout, setIsTimeout] = useState(false)
+  const [showTimeoutMessage, setShowTimeoutMessage] = useState(false)
 
   const loadingSteps = [
     '初始化系统...',
@@ -27,18 +29,28 @@ const LoadingScreen = ({ onLoadingComplete }) => {
       let loadedCount = 0
       const totalImages = images.length
       
+      // 设置图片加载超时
+      const imageTimeout = setTimeout(() => {
+        console.warn('图片加载超时，继续进入网站')
+        setResourcesLoaded(true)
+        resolve()
+      }, 15000) // 15秒图片加载超时
+      
       images.forEach((src) => {
         const img = new Image()
         img.onload = () => {
           loadedCount++
           if (loadedCount === totalImages) {
+            clearTimeout(imageTimeout)
             setResourcesLoaded(true)
             resolve()
           }
         }
         img.onerror = () => {
+          console.warn(`图片加载失败: ${src}`)
           loadedCount++
           if (loadedCount === totalImages) {
+            clearTimeout(imageTimeout)
             setResourcesLoaded(true)
             resolve()
           }
@@ -48,32 +60,56 @@ const LoadingScreen = ({ onLoadingComplete }) => {
     })
   }
 
+  // 强制完成加载
+  const forceComplete = () => {
+    console.log('强制完成加载')
+    setIsTimeout(true)
+    setShowTimeoutMessage(true)
+    setProgress(100)
+    setResourcesLoaded(true)
+    
+    setTimeout(() => {
+      setIsComplete(true)
+      setTimeout(() => {
+        onLoadingComplete()
+      }, 800)
+    }, 2000) // 显示2秒超时消息后进入网站
+  }
+
   useEffect(() => {
     let progressTimer
     let stepTimer
+    let timeoutTimer
     const totalDuration = 5000 // 5秒，给图片加载更多时间
 
     const startLoading = () => {
+      // 设置20秒超时保护
+      timeoutTimer = setTimeout(() => {
+        console.warn('加载超时，强制进入网站')
+        forceComplete()
+      }, 20000)
+      
       // 开始预加载图片
       preloadImages()
       
       // 进度条动画
       progressTimer = setInterval(() => {
         setProgress(prev => {
-          if (prev >= 100 && resourcesLoaded) {
+          if (prev >= 100 && (resourcesLoaded || isTimeout)) {
             clearInterval(progressTimer)
+            clearTimeout(timeoutTimer)
             setTimeout(() => {
               setIsComplete(true)
               setTimeout(() => {
                 onLoadingComplete()
               }, 800)
-            }, 200)
+            }, isTimeout ? 0 : 200)
             return 100
           }
           // 如果资源还没加载完，进度条在90%处等待
           const increment = 100 / (totalDuration / 50)
           const newProgress = prev + increment
-          return resourcesLoaded ? newProgress : Math.min(newProgress, 90)
+          return (resourcesLoaded || isTimeout) ? newProgress : Math.min(newProgress, 90)
         })
       }, 50)
 
@@ -94,8 +130,9 @@ const LoadingScreen = ({ onLoadingComplete }) => {
     return () => {
       clearInterval(progressTimer)
       clearTimeout(stepTimer)
+      clearTimeout(timeoutTimer)
     }
-  }, [onLoadingComplete, resourcesLoaded])
+  }, [onLoadingComplete, resourcesLoaded, isTimeout])
 
   return (
     <div className={`loading-screen ${isComplete ? 'fade-out' : ''}`}>
@@ -133,14 +170,24 @@ const LoadingScreen = ({ onLoadingComplete }) => {
           </div>
           
           <div className="loading-status">
+            {showTimeoutMessage ? (
+              <div className="timeout-message">
+                <span className="status-text timeout-text">
+                  ⚠️ 网络较慢，正在为您跳过加载...
+                </span>
+              </div>
+            ) : (
+              <>
             <span className="status-text">
-              {loadingSteps[currentStep] || '加载完成'}
+                  {isTimeout ? '准备进入网站...' : (loadingSteps[currentStep] || '加载完成')}
             </span>
             <div className="status-dots">
               <span className="dot"></span>
               <span className="dot"></span>
               <span className="dot"></span>
             </div>
+              </>
+            )}
           </div>
         </div>
       </div>

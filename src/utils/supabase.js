@@ -183,14 +183,24 @@ export const authService = {
   // 检查是否为管理员
   async isAdmin(userId) {
     try {
-      const { data, error } = await supabase
-        .from('admins')
-        .select('*')
-        .eq('user_id', userId)
-        .single()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return { isAdmin: false, adminData: null, error: null }
       
-      if (error && error.code !== 'PGRST116') throw error
-      return { isAdmin: !!data, adminData: data, error: null }
+      // 直接检查邮箱是否为管理员邮箱
+      const isAdminEmail = user.email === 'mygalaxycn@qq.com'
+      
+      if (isAdminEmail) {
+        // 获取管理员数据
+        const { data, error } = await supabase
+          .from('admins')
+          .select('*')
+          .eq('email', user.email)
+          .single()
+        
+        return { isAdmin: true, adminData: data, error: null }
+      }
+      
+      return { isAdmin: false, adminData: null, error: null }
     } catch (error) {
       return { isAdmin: false, adminData: null, error }
     }

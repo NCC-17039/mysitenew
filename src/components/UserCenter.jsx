@@ -24,11 +24,14 @@ const UserCenter = ({ user, userProfile, onClose, onProfileUpdate }) => {
 
   const loadUserActivities = async () => {
     try {
+      if (!user?.id) return
+      
       const { data, error } = await authService.getUserActivities(user.id)
       if (error) throw error
       setActivities(data || [])
     } catch (err) {
       console.error('加载活动日志失败:', err)
+      setActivities([])
     }
   }
 

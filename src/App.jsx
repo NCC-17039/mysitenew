@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import LoadingScreen from './components/LoadingScreen'
 import AuthModal from './components/AuthModal'
+import UserCenter from './components/UserCenter'
+import AdminCenter from './components/AdminCenter'
 import { authService } from './utils/supabase'
 
 function App() {
@@ -9,7 +11,10 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showUserCenter, setShowUserCenter] = useState(false)
+  const [showAdminCenter, setShowAdminCenter] = useState(false)
 
   // 检查用户登录状态
   useEffect(() => {
@@ -19,6 +24,10 @@ function App() {
         setUser(user)
         const { data: profile } = await authService.getUserProfile(user.id)
         setUserProfile(profile)
+        
+        // 检查是否为管理员
+        const { isAdmin } = await authService.isAdmin(user.id)
+        setIsAdmin(isAdmin)
       }
     }
     
@@ -33,12 +42,24 @@ function App() {
     setUser(userData)
     const { data: profile } = await authService.getUserProfile(userData.id)
     setUserProfile(profile)
+    
+    // 检查是否为管理员
+    const { isAdmin } = await authService.isAdmin(userData.id)
+    setIsAdmin(isAdmin)
   }
 
   const handleLogout = async () => {
     await authService.signOut()
     setUser(null)
     setUserProfile(null)
+    setIsAdmin(false)
+  }
+
+  const handleProfileUpdate = async () => {
+    if (user) {
+      const { data: profile } = await authService.getUserProfile(user.id)
+      setUserProfile(profile)
+    }
   }
 
   const sections = {
@@ -268,12 +289,28 @@ function App() {
           <div className="user-section">
             {user ? (
               <div className="user-info">
-                <div className="user-avatar">
+                <div 
+                  className="user-avatar"
+                  onClick={() => setShowUserCenter(true)}
+                  style={{ cursor: 'pointer' }}
+                >
                   {userProfile?.username?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
                 </div>
-                <span className="user-name">
+                <span 
+                  className="user-name"
+                  onClick={() => setShowUserCenter(true)}
+                  style={{ cursor: 'pointer' }}
+                >
                   {userProfile?.username || user.email.split('@')[0]}
                 </span>
+                {isAdmin && (
+                  <button 
+                    className="admin-button"
+                    onClick={() => setShowAdminCenter(true)}
+                  >
+                    管理
+                  </button>
+                )}
                 <button className="logout-button" onClick={handleLogout}>
                   退出
                 </button>
@@ -317,6 +354,22 @@ function App() {
         onClose={() => setShowAuthModal(false)}
         onAuthSuccess={handleAuthSuccess}
       />
+      
+      {showUserCenter && (
+        <UserCenter 
+          user={user}
+          userProfile={userProfile}
+          onClose={() => setShowUserCenter(false)}
+          onProfileUpdate={handleProfileUpdate}
+        />
+      )}
+      
+      {showAdminCenter && isAdmin && (
+        <AdminCenter 
+          user={user}
+          onClose={() => setShowAdminCenter(false)}
+        />
+      )}
     </div>
   )
 }

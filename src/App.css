@@ -124,12 +124,42 @@ body, * {
   color: #000;
   font-weight: bold;
   font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(100, 255, 218, 0.5);
 }
 
 .user-name {
   color: #64ffda;
   font-weight: 500;
   font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.user-name:hover {
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
+}
+
+.admin-button {
+  background: rgba(255, 107, 107, 0.2);
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  padding: 0.3rem 0.8rem;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.admin-button:hover {
+  background: rgba(255, 107, 107, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
 }
 
 .logout-button {

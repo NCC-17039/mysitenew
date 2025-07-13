@@ -183,18 +183,25 @@ export const authService = {
   // 检查是否为管理员
   async isAdmin(userId) {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return { isAdmin: false, adminData: null, error: null }
+      if (!userId) return { isAdmin: false, adminData: null, error: null }
       
-      // 直接检查邮箱是否为管理员邮箱
-      const isAdminEmail = user.email === 'mygalaxycn@qq.com'
+      // 获取用户资料检查邮箱
+      const { data: profile, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('email')
+        .eq('id', userId)
+        .single()
+      
+      if (profileError) return { isAdmin: false, adminData: null, error: profileError }
+      
+      const isAdminEmail = profile?.email === 'mygalaxycn@qq.com'
       
       if (isAdminEmail) {
         // 获取管理员数据
         const { data, error } = await supabase
           .from('admins')
           .select('*')
-          .eq('email', user.email)
+          .eq('email', profile.email)
           .single()
         
         return { isAdmin: true, adminData: data, error: null }
@@ -257,6 +264,82 @@ export const authService = {
     }
   },
 
+  // 管理员功能 - 批量更新网站内容
+  async batchUpdateSiteContent(updates, updatedBy) {
+    try {
+      const promises = updates.map(({ section, contentKey, contentValue }) =>
+        this.updateSiteContent(section, contentKey, contentValue, updatedBy)
+      )
+      
+      const results = await Promise.all(promises)
+      const errors = results.filter(r => r.error).map(r => r.error)
+      
+      if (errors.length > 0) {
+        throw new Error(`批量更新失败: ${errors.map(e => e.message).join(', ')}`)
+      }
+      
+      return { success: true, error: null }
+    } catch (error) {
+      return { success: false, error }
+    }
+  },
+
+  // 管理员功能 - 获取网站配置
+  async getSiteConfig() {
+    try {
+      const { data, error } = await supabase
+        .from('site_content')
+        .select('*')
+        .order('section', { ascending: true })
+      
+      if (error) throw error
+      
+      // 按section分组
+      const config = {}
+      data?.forEach(item => {
+        if (!config[item.section]) {
+          config[item.section] = {}
+        }
+        config[item.section][item.content_key] = item.content_value
+      })
+      
+      return { data: config, error: null }
+    } catch (error) {
+      return { data: null, error }
+    }
+  },
+
+  // 管理员功能 - 重置用户密码
+  async resetUserPassword(userId, newPassword) {
+    try {
+      // 这需要服务端实现，这里只是占位
+      console.log('重置密码功能需要后端支持')
+      return { success: false, error: new Error('功能暂未实现') }
+    } catch (error) {
+      return { success: false, error }
+    }
+  },
+
+  // 管理员功能 - 发送系统通知
+  async sendSystemNotification(userId, message) {
+    try {
+      const { error } = await supabase
+        .from('user_activities')
+        .insert([
+          {
+            user_id: userId,
+            activity_type: 'system_notification',
+            activity_data: { message, from: 'admin' },
+            created_at: new Date().toISOString()
+          }
+        ])
+      
+      if (error) throw error
+      return { success: true, error: null }
+    } catch (error) {
+      return { success: false, error }
+    }
+  },
   // 管理员功能 - 获取所有活动日志
   async getAllActivities() {
     try {

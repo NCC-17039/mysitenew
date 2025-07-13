@@ -5,12 +5,13 @@ import './AdminCenter.css'
 const AdminCenter = ({ user, onClose }) => {
   const [activeTab, setActiveTab] = useState('dashboard')
   const [users, setUsers] = useState([])
-  const [siteContent, setSiteContent] = useState({})
+  const [siteConfig, setSiteConfig] = useState({})
   const [activities, setActivities] = useState([])
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [editingContent, setEditingContent] = useState({})
 
   useEffect(() => {
     loadDashboardData()
@@ -22,10 +23,13 @@ const AdminCenter = ({ user, onClose }) => {
         loadUsers()
         break
       case 'content':
-        loadSiteContent()
+        loadSiteConfig()
         break
       case 'activities':
         loadAllActivities()
+        break
+      case 'settings':
+        loadSiteConfig()
         break
       default:
         break
@@ -54,23 +58,15 @@ const AdminCenter = ({ user, onClose }) => {
     }
   }
 
-  const loadSiteContent = async () => {
+  const loadSiteConfig = async () => {
     setLoading(true)
     try {
-      const { data, error } = await authService.getSiteContent()
+      const { data, error } = await authService.getSiteConfig()
       if (error) throw error
-      
-      // 将数组转换为按section分组的对象
-      const contentBySection = {}
-      data?.forEach(item => {
-        if (!contentBySection[item.section]) {
-          contentBySection[item.section] = {}
-        }
-        contentBySection[item.section][item.content_key] = item.content_value
-      })
-      setSiteContent(contentBySection)
+      setSiteConfig(data || {})
+      setEditingContent(JSON.parse(JSON.stringify(data || {})))
     } catch (err) {
-      setError('加载网站内容失败')
+      setError('加载网站配置失败')
     } finally {
       setLoading(false)
     }
@@ -89,18 +85,41 @@ const AdminCenter = ({ user, onClose }) => {
     }
   }
 
-  const handleContentUpdate = async (section, key, value) => {
+  const handleContentChange = (section, key, value) => {
+    setEditingContent(prev => ({
+      ...prev,
+      [section]: {
+        ...prev[section],
+        [key]: value
+      }
+    }))
+  }
+
+  const handleSaveContent = async (section) => {
     try {
-      const { error } = await authService.updateSiteContent(section, key, value, user.id)
+      const sectionData = editingContent[section]
+      if (!sectionData) return
+
+      const updates = Object.entries(sectionData).map(([key, value]) => ({
+        section,
+        contentKey: key,
+        contentValue: value
+      }))
+
+      const { error } = await authService.batchUpdateSiteContent(updates, user.id)
       if (error) throw error
       
-      setSuccess('内容更新成功！')
+      setSuccess(`${section.toUpperCase()} 页面内容更新成功！`)
       setTimeout(() => setSuccess(''), 3000)
       
-      // 重新加载内容
-      loadSiteContent()
+      // 更新本地状态
+      setSiteConfig(prev => ({
+        ...prev,
+        [section]: sectionData
+      }))
     } catch (err) {
       setError('更新失败: ' + err.message)
+      setTimeout(() => setError(''), 5000)
     }
   }
 
@@ -112,12 +131,81 @@ const AdminCenter = ({ user, onClose }) => {
       if (error) throw error
       
       setSuccess('用户删除成功！')
+      setTimeout(() => setSuccess(''), 3000)
       loadUsers()
     } catch (err) {
       setError('删除用户失败: ' + err.message)
+      setTimeout(() => setError(''), 5000)
     }
   }
 
+  const handleSendNotification = async (userId) => {
+    const message = prompt('请输入要发送的通知消息:')
+    if (!message) return
+
+    try {
+      const { error } = await authService.sendSystemNotification(userId, message)
+      if (error) throw error
+      
+      setSuccess('通知发送成功！')
+      setTimeout(() => setSuccess(''), 3000)
+    } catch (err) {
+      setError('发送通知失败: ' + err.message)
+      setTimeout(() => setError(''), 5000)
+    }
+  }
+
+  const renderContentEditor = (section, data) => {
+    if (!data) return null
+
+    return (
+      <div className="content-section">
+        <div className="content-section-header">
+          <h4>{section.toUpperCase()} 页面配置</h4>
+          <button 
+            className="save-button"
+            onClick={() => handleSaveContent(section)}
+          >
+            保存更改
+          </button>
+        </div>
+        
+        {Object.entries(data).map(([key, value]) => (
+          <div key={key} className="content-item">
+            <label>{key.replace(/_/g, ' ').toUpperCase()}:</label>
+            {typeof value === 'string' ? (
+              value.length > 100 ? (
+                <textarea
+                  value={value.replace(/^"|"$/g, '')}
+                  onChange={(e) => handleContentChange(section, key, `"${e.target.value}"`)}
+                  rows="3"
+                />
+              ) : (
+                <input
+                  type="text"
+                  value={value.replace(/^"|"$/g, '')}
+                  onChange={(e) => handleContentChange(section, key, `"${e.target.value}"`)}
+                />
+              )
+            ) : (
+              <textarea
+                value={JSON.stringify(value, null, 2)}
+                onChange={(e) => {
+                  try {
+                    const parsed = JSON.parse(e.target.value)
+                    handleContentChange(section, key, parsed)
+                  } catch (err) {
+                    // 忽略JSON解析错误，用户还在编辑中
+                  }
+                }}
+                rows="8"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString('zh-CN')
   }
@@ -128,10 +216,21 @@ const AdminCenter = ({ user, onClose }) => {
       case 'logout': return '🚪'
       case 'register': return '📝'
       case 'profile_update': return '✏️'
+      case 'system_notification': return '📢'
       default: return '📋'
     }
   }
 
+  const getActivityText = (type) => {
+    switch (type) {
+      case 'login': return '登录系统'
+      case 'logout': return '退出系统'
+      case 'register': return '注册账号'
+      case 'profile_update': return '更新个人资料'
+      case 'system_notification': return '收到系统通知'
+      default: return '未知活动'
+    }
+  }
   return (
     <div className="admin-center-overlay" onClick={onClose}>
       <div className="admin-center" onClick={(e) => e.stopPropagation()}>
@@ -164,6 +263,12 @@ const AdminCenter = ({ user, onClose }) => {
             onClick={() => setActiveTab('activities')}
           >
             📋 活动日志
+          </button>
+          <button 
+            className={`tab-button ${activeTab === 'settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            ⚙️ 系统设置
           </button>
         </div>
 
@@ -199,7 +304,7 @@ const AdminCenter = ({ user, onClose }) => {
                 <div className="stat-card">
                   <div className="stat-icon">🌐</div>
                   <div className="stat-info">
-                    <div className="stat-number">{Object.keys(siteContent).length}</div>
+                    <div className="stat-number">{Object.keys(siteConfig).length}</div>
                     <div className="stat-label">内容模块</div>
                   </div>
                 </div>
@@ -223,8 +328,15 @@ const AdminCenter = ({ user, onClose }) => {
                         <div className="user-name">{user.username || '未设置'}</div>
                         <div className="user-email">{user.email}</div>
                         <div className="user-date">注册: {formatDate(user.created_at)}</div>
+                        {user.bio && <div className="user-bio">{user.bio}</div>}
                       </div>
                       <div className="user-actions">
+                        <button 
+                          className="notify-button"
+                          onClick={() => handleSendNotification(user.id)}
+                        >
+                          发送通知
+                        </button>
                         <button 
                           className="delete-button"
                           onClick={() => handleDeleteUser(user.id)}
@@ -246,35 +358,8 @@ const AdminCenter = ({ user, onClose }) => {
                 <div className="loading">加载中...</div>
               ) : (
                 <div className="content-sections">
-                  {Object.entries(siteContent).map(([section, content]) => (
-                    <div key={section} className="content-section">
-                      <h4>{section.toUpperCase()} 页面</h4>
-                      {Object.entries(content).map(([key, value]) => (
-                        <div key={key} className="content-item">
-                          <label>{key}:</label>
-                          {typeof value === 'string' ? (
-                            <input
-                              type="text"
-                              value={value.replace(/"/g, '')}
-                              onChange={(e) => handleContentUpdate(section, key, `"${e.target.value}"`)}
-                            />
-                          ) : (
-                            <textarea
-                              value={JSON.stringify(value, null, 2)}
-                              onChange={(e) => {
-                                try {
-                                  const parsed = JSON.parse(e.target.value)
-                                  handleContentUpdate(section, key, parsed)
-                                } catch (err) {
-                                  // 忽略JSON解析错误，用户还在编辑中
-                                }
-                              }}
-                              rows="6"
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                  {Object.entries(editingContent).map(([section, content]) => 
+                    renderContentEditor(section, content)
                   ))}
                 </div>
               )}
@@ -295,7 +380,12 @@ const AdminCenter = ({ user, onClose }) => {
                       </div>
                       <div className="activity-details">
                         <div className="activity-text">
-                          <strong>{activity.user_email}</strong> {activity.activity_type}
+                          <strong>{activity.user_email}</strong> {getActivityText(activity.activity_type)}
+                          {activity.activity_data?.message && (
+                            <div className="activity-message">
+                              消息: {activity.activity_data.message}
+                            </div>
+                          )}
                         </div>
                         <div className="activity-time">
                           {formatDate(activity.created_at)}
@@ -303,6 +393,46 @@ const AdminCenter = ({ user, onClose }) => {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="settings-tab">
+              <h3>系统设置</h3>
+              {loading ? (
+                <div className="loading">加载中...</div>
+              ) : (
+                <div className="settings-sections">
+                  <div className="settings-section">
+                    <h4>🎨 主题配置</h4>
+                    {siteConfig.site && renderContentEditor('site', siteConfig.site)}
+                  </div>
+                  
+                  <div className="settings-section">
+                    <h4>🔧 系统维护</h4>
+                    <div className="maintenance-actions">
+                      <button 
+                        className="maintenance-button"
+                        onClick={() => {
+                          if (confirm('确定要清理所有活动日志吗？')) {
+                            setSuccess('功能开发中...')
+                          }
+                        }}
+                      >
+                        清理活动日志
+                      </button>
+                      <button 
+                        className="maintenance-button"
+                        onClick={() => {
+                          setSuccess('数据备份功能开发中...')
+                        }}
+                      >
+                        备份数据
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

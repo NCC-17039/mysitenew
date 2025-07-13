@@ -360,9 +360,11 @@ const AdminCenter = ({ user, onClose }) => {
                 <div className="loading">加载中...</div>
               ) : (
                 <div className="content-sections">
-                  {Object.entries(editingContent).map(([section, content]) => 
-                    renderContentEditor(section, content)
-                  )}
+                  {Object.entries(editingContent).map(([section, content]) => (
+                    <div key={section}>
+                      {renderContentEditor(section, content)}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

@@ -27,6 +27,7 @@
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 30%, #16213e 60%, #0f3460 100%);
   background-size: 400% 400%;
   animation: gradientShift 8s ease infinite;
+  will-change: background-position;
 }
 
 @keyframes gradientShift {
@@ -43,6 +44,7 @@
   gap: 3rem;
   position: relative;
   z-index: 10;
+  will-change: transform;
 }
 
 /* Logo部分 */

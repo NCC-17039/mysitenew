@@ -34,6 +34,13 @@ function App() {
     checkUser()
   }, [])
 
+  // 性能优化：防抖处理页面切换
+  const handleSectionChange = (section) => {
+    if (activeSection !== section) {
+      setActiveSection(section)
+    }
+  }
+
   const handleLoadingComplete = () => {
     setIsLoading(false)
   }
@@ -264,6 +271,7 @@ function App() {
               src="https://user-assets.sxlcdn.com/images/1046536/FpqadbyY9n7LXaAR77KQr9di7xxP.png" 
               alt="NCC-17039 Logo" 
               className="header-logo-image"
+              loading="lazy"
             />
             <div className="logo-text-container">
               <span className="logo-text">NCC-17039</span>
@@ -276,7 +284,7 @@ function App() {
               <button
                 key={section}
                 className={`nav-item ${activeSection === section ? 'active' : ''}`}
-                onClick={() => setActiveSection(section)}
+                onClick={() => handleSectionChange(section)}
               >
                 {section === 'home' && '🏠 首页'}
                 {section === 'about' && '👨‍🚀 关于'}

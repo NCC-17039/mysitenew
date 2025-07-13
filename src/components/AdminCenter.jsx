@@ -206,6 +206,7 @@ const AdminCenter = ({ user, onClose }) => {
       </div>
     )
   }
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleString('zh-CN')
   }
@@ -231,6 +232,7 @@ const AdminCenter = ({ user, onClose }) => {
       default: return '未知活动'
     }
   }
+
   return (
     <div className="admin-center-overlay" onClick={onClose}>
       <div className="admin-center" onClick={(e) => e.stopPropagation()}>
@@ -360,7 +362,7 @@ const AdminCenter = ({ user, onClose }) => {
                 <div className="content-sections">
                   {Object.entries(editingContent).map(([section, content]) => 
                     renderContentEditor(section, content)
-                  ))}
+                  )}
                 </div>
               )}
             </div>

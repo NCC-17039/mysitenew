@@ -72,7 +72,7 @@ function App() {
             <>
               <div className="home-animation-container">
                 <div className="stars-container">
-                  {[...Array(50)].map((_, i) => (
+                  {[...Array(10)].map((_, i) => (
                     <div key={i} className={`star star-${i % 5 + 1}`}></div>
                   ))}
                 </div>

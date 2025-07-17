@@ -84,27 +84,29 @@ function App() {
                 <h1 className="home-title-animated">给生活以记录</h1>
               </div>
               <div className="home-navigation">
-                <button 
-                  className="home-nav-button"
-                  onClick={() => handleSectionChange('about')}
-                >
-                  <span className="button-icon">👨‍🚀</span>
-                  <span className="button-text">关于我</span>
-                </button>
-                <button 
-                  className="home-nav-button"
-                  onClick={() => handleSectionChange('projects')}
-                >
-                  <span className="button-icon">🛸</span>
-                  <span className="button-text">我的项目</span>
-                </button>
-                <button 
-                  className="home-nav-button"
-                  onClick={() => handleSectionChange('contact')}
-                >
-                  <span className="button-icon">📡</span>
-                  <span className="button-text">联系我</span>
-                </button>
+                <div className="home-nav-buttons">
+                  <button 
+                    className="home-nav-button"
+                    onClick={() => handleSectionChange('about')}
+                  >
+                    <span className="button-icon">👨‍🚀</span>
+                    <span className="button-text">关于我</span>
+                  </button>
+                  <button 
+                    className="home-nav-button"
+                    onClick={() => handleSectionChange('projects')}
+                  >
+                    <span className="button-icon">🛸</span>
+                    <span className="button-text">我的项目</span>
+                  </button>
+                  <button 
+                    className="home-nav-button"
+                    onClick={() => handleSectionChange('contact')}
+                  >
+                    <span className="button-icon">📡</span>
+                    <span className="button-text">联系我</span>
+                  </button>
+                </div>
               </div>
             </>
           ) : (

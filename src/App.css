@@ -58,8 +58,8 @@ body, * {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(3px) saturate(1.1);
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px) saturate(1.1);
   z-index: -1;
 }
 
@@ -289,15 +289,17 @@ body, * {
   font-weight: bold;
   color: #ffffff;
   text-shadow: 
-    0 0 10px rgba(100, 255, 218, 0.8),
-    0 0 20px rgba(100, 255, 218, 0.6),
-    0 0 30px rgba(100, 255, 218, 0.4),
-    2px 2px 4px rgba(0, 0, 0, 0.8);
+    0 0 20px rgba(100, 255, 218, 1),
+    0 0 40px rgba(100, 255, 218, 0.8),
+    0 0 60px rgba(100, 255, 218, 0.6),
+    3px 3px 6px rgba(0, 0, 0, 1),
+    0 0 80px rgba(255, 255, 255, 0.5);
   letter-spacing: 4px;
   opacity: 0;
   animation: titleAssemble 3s ease-out 3.5s forwards;
   position: relative;
   z-index: 5;
+  margin-bottom: 2rem;
   background: linear-gradient(45deg, #64ffda 0%, #448aff 50%, #64ffda 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
@@ -331,12 +333,22 @@ body, * {
 
 .home-navigation {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 2rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
   opacity: 0;
   animation: navAppear 1.5s ease-out 6.5s forwards;
   z-index: 5;
   position: relative;
+}
+
+/* 添加按钮容器 */
+.home-nav-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 @keyframes navAppear {
@@ -362,22 +374,24 @@ body, * {
   flex-direction: column;
   align-items: center;
   gap: 0.6rem;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(15px) saturate(1.2);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px) saturate(1.2);
   border: 2px solid rgba(100, 255, 218, 0.3);
   border-radius: 15px;
-  padding: 1.2rem 1rem;
+  padding: 1rem 0.8rem;
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
   color: inherit;
-  min-width: 100px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  min-width: 90px;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(100, 255, 218, 0.2);
 }
 
 .home-nav-button:hover {
-  background: rgba(100, 255, 218, 0.15);
-  backdrop-filter: blur(20px) saturate(1.4);
+  background: rgba(100, 255, 218, 0.2);
+  backdrop-filter: blur(25px) saturate(1.4);
   border-color: #64ffda;
   transform: translateY(-3px) scale(1.05);
   box-shadow: 
@@ -386,7 +400,7 @@ body, * {
 }
 
 .button-icon {
-  font-size: 2rem;
+  font-size: 1.8rem;
   transition: all 0.3s ease;
 }
 
@@ -397,8 +411,9 @@ body, * {
 .button-text {
   color: #64ffda;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all 0.3s ease;
+  text-shadow: 0 0 10px rgba(100, 255, 218, 0.5);
 }
 
 .home-nav-button:hover .button-text {
@@ -1198,25 +1213,24 @@ body, * {
   .home-title-animated {
     font-size: 2.8rem;
     letter-spacing: 2px;
+    margin-bottom: 1.5rem;
   }
   
-  .home-navigation {
-    flex-wrap: wrap;
-    justify-content: center;
+  .home-nav-buttons {
     gap: 1rem;
   }
   
   .home-nav-button {
-    min-width: 90px;
-    padding: 1rem 0.8rem;
+    min-width: 85px;
+    padding: 0.9rem 0.7rem;
   }
   
   .button-icon {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
   
   .button-text {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
   }
 
   .other-content {
@@ -1437,23 +1451,24 @@ body, * {
   .home-title-animated {
     font-size: 2.2rem;
     letter-spacing: 1px;
+    margin-bottom: 1rem;
   }
   
-  .home-navigation {
+  .home-nav-buttons {
     gap: 0.8rem;
   }
   
   .home-nav-button {
-    min-width: 80px;
-    padding: 0.8rem 0.6rem;
+    min-width: 75px;
+    padding: 0.8rem 0.5rem;
   }
   
   .button-icon {
-    font-size: 1.6rem;
+    font-size: 1.4rem;
   }
   
   .button-text {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
   }
 
   .other-content {
